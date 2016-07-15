@@ -1,0 +1,42 @@
+{
+  "name": "hubot-random-exercise",
+  "description": "Sends out messages to users to do randomly picked exercise",
+  "version": "1.0.0",
+  "author": "Briwa (http://github.com/briwa)",
+  "license": "MIT",
+  "keywords": [
+    "hubot",
+    "hubot-scripts",
+    "random-exercise",
+    "exercise",
+    "fun"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/briwa/hubot-random-exercise.git"
+  },
+  "bugs": {
+    "url": "git://github.com/briwa/hubot-random-exercise/issues"
+  },
+  "dependencies": {
+    "lodash": "3.9.3",
+    "moment": "^2.10.6",
+    "node-schedule": "^0.5.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "co": "^4.6.0",
+    "grunt": "^0.4.5",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-mocha-test": "^0.12.7",
+    "grunt-release": "^0.13.0",
+    "hubot": "^2.18.0",
+    "hubot-test-helper": "^1.4.4",
+    "matchdep": "^1.0.1",
+    "mocha": "^2.4.5"
+  },
+  "main": "index.coffee",
+  "scripts": {
+    "test": "grunt test"
+  }
+}

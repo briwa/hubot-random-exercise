@@ -1,0 +1,60 @@
+# Hubot: hubot-random-exercise
+
+[![Build Status](https://travis-ci.org/briwa/hubot-random-exercise.svg?branch=master)](https://travis-ci.org/briwa/hubot-random-exercise)
+
+Sends out messages to users to do randomly picked exercise.
+Inspired from [brandonshin/slackbot-workout](https://github.com/brandonshin/slackbot-workout), so props to them!
+
+I only used this for Slack. Haven't tried for others, so use with caution :fire:
+
+## Installation
+
+Add **hubot-random-exercise** to your `package.json` file:
+
+```
+npm install --save hubot-random-exercise
+```
+
+Add **hubot-random-exercise** to your `external-scripts.json`:
+
+```json
+["hubot-random-exercise"]
+```
+
+Run `npm install`
+
+## Sample Interaction
+
+### Default
+Invite the bot to a channel and start getting crazy.
+
+```
+user1>> @hubot start exercise normal mode
+hubot>> Alright, it's on! Next exercise will commence in 28 minutes :muscle:
+```
+
+Bot will post a message to the channel every 20-30 minutes in normal mode. 
+There are a few other modes available: fast (10-15 min), slow (45-60 min), and madness (1-5 min).
+A random exercise will be picked from the `exercises` list. Feel free to modify to make it your own.
+The exercise will be assigned to one of the members in the channel, picked at random.
+
+As scheduled, the message would be like this:
+```
+hubot>> Your turn to do alternating leg lunges for 60 seconds today, @user1!
+hubot>> The next exercise will commence in 24 minutes :muscle:
+```
+
+And then it goes on and on, until all members have been picked.
+
+### Daily scheduled
+By adding `daily_default: "channel name"` to the `exercises` list, you can automate the above process
+so that the exercise will start automatically every 9am on weekdays.
+
+### Single exercise
+Alternatively, you can do a single exercise for yourself:
+
+```
+user1>> @hubot single exercise
+hubot>> Your turn to do alternating leg lunges for 60 seconds today, @user1!
+```
+This will only generate one message only, as opposed to the default one.
