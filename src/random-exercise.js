@@ -86,7 +86,8 @@ module.exports = (robot) => {
         "range" : [30, 60],
         "unit" : "seconds"
       }
-    ]
+    ],
+    "daily": "dailychallenge"
   };
 
   // where we keep the exercise data
@@ -244,4 +245,15 @@ module.exports = (robot) => {
     });
 
   });
+
+  // will start at 9am everyday current timezone if default is set
+  if (exercises.daily) {
+    scheduler.scheduleJob({hour: 9, minute: 0, second: 1, daysOfWeek: new scheduler.Range(1,5)}, function(postExercise) {
+
+      postExercise({
+        room: exercises.daily,
+        first: true
+      });
+    }.bind(null, postExercise));
+  }
 }
