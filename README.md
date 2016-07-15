@@ -46,10 +46,6 @@ hubot>> The next exercise will commence in 24 minutes :muscle:
 
 And then it goes on and on, until all members have been picked.
 
-### Daily scheduled
-By adding `daily_default: "channel name"` to the `exercises` list, you can automate the above process
-so that the exercise will start automatically every 9am on weekdays.
-
 ### Single exercise
 Alternatively, you can do a single exercise for yourself:
 
