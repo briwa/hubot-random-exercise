@@ -248,7 +248,7 @@ module.exports = (robot) => {
 
   // will start at 9am everyday current timezone if default is set
   if (exercises.daily) {
-    scheduler.scheduleJob({hour: 9, minute: 0, second: 1, daysOfWeek: new scheduler.Range(1,5)}, function(postExercise) {
+    scheduler.scheduleJob({hour: 9, minute: 0, second: 1, dayOfWeek: new scheduler.Range(1,5)}, function(postExercise) {
 
       postExercise({
         room: exercises.daily,
