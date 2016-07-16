@@ -35,7 +35,7 @@
     "matchdep": "^1.0.1",
     "mocha": "^2.4.5"
   },
-  "main": "index.coffee",
+  "main": "index.js",
   "scripts": {
     "test": "grunt test"
   }
