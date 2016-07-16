@@ -1,7 +1,7 @@
 {
   "name": "hubot-random-exercise",
   "description": "Sends out messages to users to do randomly picked exercise",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Briwa (http://github.com/briwa)",
   "license": "MIT",
   "keywords": [
