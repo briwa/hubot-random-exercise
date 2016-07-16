@@ -248,12 +248,21 @@ module.exports = (robot) => {
 
   // will start at 9am everyday current timezone if default is set
   if (exercises.daily) {
-    scheduler.scheduleJob({hour: 9, minute: 0, second: 1, dayOfWeek: new scheduler.Range(1,5)}, function(postExercise) {
+    const rule = {hour: 9, minute: 0, second: 1, dayOfWeek: new scheduler.Range(1, 5)};
+    // const rule = {second: new scheduler.Range(0,60)}; // for testing purpose
+    scheduler.scheduleJob(rule, function() {
 
-      postExercise({
-        room: exercises.daily,
-        first: true
-      });
-    }.bind(null, postExercise));
+      const holidays = robot.brain.get('holidays') || [];
+      const today = moment().format('YYYY-MM-DD');
+      const holiday = _.find(holidays, {date: today});
+      if (holiday) {
+        robot.messageRoom(`#${exercises.daily}`, `No random exercises today because we're celebrating ${holiday.summary} :muscle:`);
+      } else {
+        postExercise({
+          room: exercises.daily,
+          first: true
+        });
+      }
+    });
   }
 }
