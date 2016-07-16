@@ -52,12 +52,11 @@ describe("random exercise", function() {
       return room.user.say("briwa", "hubot: start exercise stupid mode").then(function() {
         expect(room.messages).to.eql([
           ["briwa", "hubot: start exercise stupid mode"],
-          ["hubot", "@briwa I don't think I understand the mode... stupid? What? Please try again!"],
-          ["hubot", "Available modes are normal, slow, fast and madness."]
+          ["hubot", "@briwa I don't think I understand the mode... stupid? What? Please try again!\nAvailable modes are normal, slow, fast and madness."]
         ]);
       });
     });
-    
+
   });
 
   context("single exercise", function() {

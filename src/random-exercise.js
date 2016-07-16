@@ -167,7 +167,7 @@ module.exports = robot => {
     }
 
     if (respond) {
-      respond.send(messages.join('\n'));
+      respond.reply(messages.join('\n'));
     } else {
       robot.messageRoom(`#${room}`, messages.join('\n'));
     }
@@ -186,8 +186,11 @@ module.exports = robot => {
 
     const new_mode = res.match[1];
     if (!mode_preset[new_mode]) {
-      res.reply(`I don't think I understand the mode... ${new_mode}? What? Please try again!`);
-      res.send(`Available modes are normal, slow, fast and madness.`);
+      const messages = [
+        `I don't think I understand the mode... ${new_mode}? What? Please try again!`,
+        `Available modes are normal, slow, fast and madness.`
+      ];
+      res.reply(messages.join('\n'));
       return false;
     }
 

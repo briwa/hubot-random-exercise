@@ -48,6 +48,12 @@ hubot>> The next exercise will commence in 24 minutes :muscle:
 
 And then it goes on and on, until all members have been picked.
 
+If you want to stop the exercise prematurely, do so with:
+```
+user1>> @hubot stop exercise
+hubot>> @user1 Exercise has been stopped! Thank you for doing the exercise :muscle:
+```
+
 ### Single exercise
 Alternatively, you can do a single exercise for yourself:
 
