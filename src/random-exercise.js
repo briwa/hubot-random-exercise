@@ -93,7 +93,7 @@ module.exports = robot => {
   let exercise_start;
   let mode = 'normal';
 
-  function postExercise(config) {
+  const postExercise = (config) => {
     // do not proceed if there's no exercise initiated
     if (!config.first && !config.single && !exercise_start) {
       console.log('No exercise is initiated, aborting...');
@@ -103,11 +103,11 @@ module.exports = robot => {
     const respond = config.respond;
     const room = config.room || respond.message.room;
 
-    const scheduleNextExercise = function(room) {
+    const scheduleNextExercise = (room) => {
       const next_minutes = _.random(mode_preset[mode].min, mode_preset[mode].max);
       const next = moment().add( next_minutes, 'minutes' );
 
-      scheduler.scheduleJob( next.toDate(), function() {
+      scheduler.scheduleJob( next.toDate(), () => {
         postExercise({room: room});
       });
 
@@ -137,13 +137,13 @@ module.exports = robot => {
       if (!config.single) {
         const the_bot = robot.adapter.client.self;
         const channel_users = _.find(robot.adapter.client.channels, {name: room}).members;
-        const active_users = _.filter(robot.adapter.client.users, function(user) {
+        const active_users = _.filter(robot.adapter.client.users, (user) => {
           return _.contains(channel_users, user.id) && user.id !== the_bot.id && !_.contains(exercise_start.members, user.id);
         });
 
         if (active_users.length > 0) {
 
-          user = randomByRange(active_users);
+          user = _.sample(active_users);
 
           // exclude user for the next exercise
           exercise_start.members.push(user.id);
@@ -156,10 +156,10 @@ module.exports = robot => {
       }
 
       if (user) {
-        const exercise = randomByRange(exercises.list);
+        const exercise = _.sample(exercises.list);
 
         // always the first message
-        messages.unshift(`Your turn to ${exercise.action || 'do'} ${exercise.name} for ${randomByRange(exercise.range)} ${exercise.unit} today, @${user.name}!`);
+        messages.unshift(`Your turn to ${exercise.action || 'do'} ${exercise.name} for ${_.sample(exercise.range)} ${exercise.unit} today, @${user.name}!`);
       } else {
         messages.push(`Everyone in the channel has had their turn, so it's a wrap! See you on the next exercise ;)`);
         exercise_start = null;
@@ -171,10 +171,6 @@ module.exports = robot => {
     } else {
       robot.messageRoom(`#${room}`, messages.join('\n'));
     }
-  }
-
-  function randomByRange(range) {
-    return range[_.random(0, range.length - 1)];
   }
 
   robot.respond(/start exercise (\w+) mode/i, res => {

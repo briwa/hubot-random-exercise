@@ -1,8 +1,7 @@
 # Hubot: hubot-random-exercise
 
-[![Build Status](https://travis-ci.org/briwa/hubot-random-exercise.svg?branch=master)](https://travis-ci.org/briwa/hubot-random-exercise)
+[![Build Status](https://img.shields.io/travis/briwa/hubot-random-exercise/master.svg?style=flat-square)](https://travis-ci.org/briwa/hubot-random-exercise)
 [![npm version](https://img.shields.io/npm/v/hubot-random-exercise.svg?style=flat-square)](https://www.npmjs.com/package/hubot-random-exercise)
-[![npm downloads](https://img.shields.io/npm/dm/hubot-random-exercise.svg?style=flat-square)](https://www.npmjs.com/package/hubot-random-exercise)
 
 Sends out messages to users to do randomly picked exercise.
 Inspired from [brandonshin/slackbot-workout](https://github.com/brandonshin/slackbot-workout), so props to them!
