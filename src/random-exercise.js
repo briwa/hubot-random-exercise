@@ -93,6 +93,7 @@ module.exports = (robot) => {
   // where we keep the exercise data
   let exercise_start;
   let mode = 'normal';
+  let daily_channel = exercises.daily || 'general';
 
   const postExercise = (config) => {
     const messages = [];
@@ -188,10 +189,10 @@ module.exports = (robot) => {
     robot.send({room: recipient}, messages.join('\n'));
   }
 
-  robot.respond(/start exercise (\w+) mode/i, res => {
+  robot.respond(/start exercise (\w+) mode/i, (res) => {
 
     if (res.message.room === res.message.user.name) {
-      res.reply(`Please ask me again in channel, not direct message!`);
+      res.reply(`Please ask me again in #${daily_channel}, not direct message!`);
       return false;
     }
 
@@ -202,6 +203,11 @@ module.exports = (robot) => {
         `Available modes are normal, slow, fast and madness.`
       ];
       res.reply(messages.join('\n'));
+      return false;
+    }
+
+    if (res.message.room !== daily_channel) {
+      res.reply(`Please ask me again in #${daily_channel}, I work there hehe`);
       return false;
     }
 
@@ -220,7 +226,7 @@ module.exports = (robot) => {
     });
   });
 
-  robot.respond(/stop exercise/i, res => {
+  robot.respond(/stop exercise/i, (res) => {
 
     if (res.message.room === res.message.user.name) {
       res.reply(`Please ask me again in channel, not direct message!`);
@@ -237,12 +243,59 @@ module.exports = (robot) => {
     res.reply('Exercise has been stopped! Thank you for doing the exercise :muscle:');
   });
 
-  robot.respond(/single exercise/i, res => {
+  robot.respond(/single exercise/i, (res) => {
 
     postExercise({
       respond: res,
       single: true,
     });
+
+  });
+
+  robot.respond(/exclude me from random exercise/i, (res) => {
+
+    let excluded = robot.brain.get('excluded_random_exercise') || [];
+    excluded = _.uniq(excluded.concat([res.message.user.id]));
+    robot.brain.set('excluded_random_exercise', excluded);
+
+    res.reply('ok! You are now excluded from random exercises');
+
+  });
+
+  robot.respond(/include me in random exercise/i, (res) => {
+
+    let excluded = robot.brain.get('excluded_random_exercise') || [];
+    excluded = _.pull(excluded, res.message.user.id);
+    robot.brain.set('excluded_random_exercise', excluded);
+
+    res.reply('ok! You are now included in random exercises');
+
+  });
+
+  robot.respond(/am i included in random exercise/i, (res) => {
+
+    let excluded = robot.brain.get('excluded_random_exercise') || [];
+
+    if (excluded.indexOf(res.message.user.id) >= 0) {
+      res.reply(`You are not included in random exercise in #${daily_channel}... You can join by saying \`include me to random exercise\``);
+    } else {
+      res.reply(`You are included in random exercise in #${daily_channel}! Happy random exercising :muscle:`);
+    }
+
+  });
+
+  robot.respond(/random exercise help/i, (res) => {
+
+    const messages = [
+      'I see that you might need a little help with the commands, here you go!\n',
+      '`start exercise normal mode`: initiate random exercises manually for all people in the channel. Available modes: normal, slow, fast, and madness',
+      '`stop exercise`: stop ongoing exercise',
+      '`single exercise`: initiate one single random exercise for your own',
+      '`exclude me from random exercise`',
+      '`include me in random exercise`',
+      '`am i included in random exercise`'
+    ];
+    res.send(messages.join('\n'));
 
   });
 
