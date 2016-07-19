@@ -1,25 +1,29 @@
+'use strict';
+
 const Helper = require("hubot-test-helper");
 const helper = new Helper("../src");
 
 const expect = require("chai").expect;
 
-describe("random exercise", function() {
+describe("random exercise", () => {
 
-  beforeEach(function() {
+  let room;
+
+  beforeEach(() => {
     room = helper.createRoom();
     room.robot.brain.userForId("briwa", {name: "briwa"});
     room.robot.brain.userForId("colin", {name: "colin"});
     room.robot.brain.userForId("jun", {name: "jun"});
   });
 
-  afterEach(function() {
+  afterEach(() => {
     room.destroy();
   });
 
-  context("default random exercise", function() {
+  context("default random exercise", () => {
 
-    it("will start exercise normal mode", function() {
-      return room.user.say("briwa", "hubot: start exercise normal mode").then(function() {
+    it("will start exercise normal mode", () => {
+      return room.user.say("briwa", "hubot: start exercise normal mode").then(() => {
 
         // the randomized minute reply
         const randomized = room.messages[1][1];
@@ -28,9 +32,9 @@ describe("random exercise", function() {
       });
     });
 
-    it("will stop exercise", function() {
-      return room.user.say("briwa", "hubot: start exercise normal mode").then(function() {
-        return room.user.say("briwa", "hubot: stop exercise").then(function() {
+    it("will stop exercise", () => {
+      return room.user.say("briwa", "hubot: start exercise normal mode").then(() => {
+        return room.user.say("briwa", "hubot: stop exercise").then(() => {
           
           // the last message
           const last_message = room.messages[room.messages.length - 1];
@@ -39,8 +43,8 @@ describe("random exercise", function() {
       });
     });
 
-    it("will not stop exercise when there's no existing exercise", function() {
-      return room.user.say("briwa", "hubot: stop exercise").then(function() {
+    it("will not stop exercise when there's no existing exercise", () => {
+      return room.user.say("briwa", "hubot: stop exercise").then(() => {
         expect(room.messages).to.eql([
           ["briwa", "hubot: stop exercise"],
           ["hubot", "@briwa No exercise has been initiated... what are you talking about? :|"]
@@ -48,8 +52,8 @@ describe("random exercise", function() {
       });
     });
 
-    it("will not start exercise if the mode is invalid", function() {
-      return room.user.say("briwa", "hubot: start exercise stupid mode").then(function() {
+    it("will not start exercise if the mode is invalid", () => {
+      return room.user.say("briwa", "hubot: start exercise stupid mode").then(() => {
         expect(room.messages).to.eql([
           ["briwa", "hubot: start exercise stupid mode"],
           ["hubot", "@briwa I don't think I understand the mode... stupid? What? Please try again!\nAvailable modes are normal, slow, fast and madness."]
@@ -59,10 +63,10 @@ describe("random exercise", function() {
 
   });
 
-  context("single exercise", function() {
+  context("single exercise", () => {
 
-    it("will start single exercise", function() {
-      return room.user.say("briwa", "hubot: single exercise").then(function() {
+    it("will start single exercise", () => {
+      return room.user.say("briwa", "hubot: single exercise").then(() => {
 
         // the randomized exercise reply
         const randomized = room.messages[1][1];
@@ -71,4 +75,5 @@ describe("random exercise", function() {
     });
 
   });
+
 });
