@@ -100,77 +100,90 @@ module.exports = robot => {
       return false;
     }
 
+    const messages = [];
     const respond = config.respond;
     const room = config.room || respond.message.room;
+
+    let recipient;
+    if (respond) {
+      // in DMs
+      if (respond.message.user.name === respond.message.room) {
+        recipient = `@${respond.message.user.name}`;
+      } else {
+        // in channel
+        recipient = `#${respond.message.room}`;
+      }
+
+    } else {
+      // automated
+      recipient = `#${room}`;
+    }
 
     const scheduleNextExercise = (room) => {
       const next_minutes = _.random(mode_preset[mode].min, mode_preset[mode].max);
       const next = moment().add( next_minutes, 'minutes' );
 
       scheduler.scheduleJob( next.toDate(), () => {
-        postExercise({room: room});
+        postExercise({
+          room: room,
+          next: true
+        });
       });
 
       return next_minutes;
-    }
+    };
 
-    let messages = [];
+    const generateMessage = (user, exercise) => {
+      const slack_user = typeof user === 'string' ? robot.adapter.client.getUserByID(user) : user;
+      return `Your turn to ${exercise.action || 'do'} ${exercise.name} for ${_.sample(exercise.range)} ${exercise.unit} today, @${slack_user.name}!`; 
+    };
 
-    // skip the very first exercise to schedule for the next one
-    if (config.first) {
+    if (config.single) {
+      const user = respond.message.user;
+      const exercise = _.sample(exercises.list);
+
+      messages.push(generateMessage(user, exercise));
+    } else if (config.first) {
+      const channel_users = robot.adapter.client.getChannelByName(room).members;
+      const possible_users = channel_users.filter((user) => {
+        const slack_user = robot.adapter.client.getUserByID(user);
+        return !slack_user.is_bot;
+      });
 
       // set the initiator locally
       exercise_start = {
         time: moment().toISOString(),
         mode: mode,
-        members: []
+        members: _.shuffle(possible_users),
+        exercises: _.shuffle(exercises.list)
       };
 
+      // schedule the next one
       const next_minutes = scheduleNextExercise(room);
       messages.push(`Alright, it's on! Next exercise will commence in ${next_minutes} minutes :muscle:`);
-    } else {
-
-      let user;
-
-      // by default it will get all users in the channel and pick one randomly
-      // or use that one user that initiates this
-      if (!config.single) {
-        const the_bot = robot.adapter.client.self;
-        const channel_users = _.find(robot.adapter.client.channels, {name: room}).members;
-        const active_users = _.filter(robot.adapter.client.users, (user) => {
-          return _.contains(channel_users, user.id) && user.id !== the_bot.id && !_.contains(exercise_start.members, user.id);
-        });
-
-        if (active_users.length > 0) {
-
-          user = _.sample(active_users);
-
-          // exclude user for the next exercise
-          exercise_start.members.push(user.id);
-
-          const next_minutes = scheduleNextExercise(room);
-          messages.push(`The next exercise will commence in ${next_minutes} minutes :muscle:`);
-        }
-      } else {
-        user = respond.message.user;
+    } else if (config.next) {
+      if (!exercise_start.exercises.length) {
+        // refill
+        exercise_start.exercises = _.shuffle(exercises.list);
       }
 
-      if (user) {
-        const exercise = _.sample(exercises.list);
+      // let's just mutate! who cares
+      const user = exercise_start.members.pop();
+      const exercise = exercise_start.exercises.pop();
 
-        // always the first message
-        messages.unshift(`Your turn to ${exercise.action || 'do'} ${exercise.name} for ${_.sample(exercise.range)} ${exercise.unit} today, @${user.name}!`);
-      } else {
+      messages.push(generateMessage(user, exercise));
+
+      if (!exercise_start.members.length) {
         messages.push(`Everyone in the channel has had their turn, so it's a wrap! See you on the next exercise ;)`);
         exercise_start = null;
+      } else {
+        // schedule the next one
+        const next_minutes = scheduleNextExercise(room);
+        messages.push(`The next exercise will commence in ${next_minutes} minutes :muscle:`);
       }
     }
 
-    if (respond) {
-      respond.reply(messages.join('\n'));
-    } else {
-      robot.messageRoom(`#${room}`, messages.join('\n'));
-    }
+    robot.send({room: recipient}, messages.join('\n'));
   }
 
   robot.respond(/start exercise (\w+) mode/i, res => {
