@@ -6,7 +6,7 @@
 Sends out messages to users to do randomly picked exercise.
 Inspired from [brandonshin/slackbot-workout](https://github.com/brandonshin/slackbot-workout), so props to them!
 
-I only used this for Slack. Haven't tried for others, so use with caution :fire:
+**Only for Slack!** This uses specific features that is supported by [@slack/client](https://github.com/slackhq/node-slack-sdk).
 
 ## Installation
 
