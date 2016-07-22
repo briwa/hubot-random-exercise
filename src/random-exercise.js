@@ -120,17 +120,20 @@ module.exports = robot => {
     }
 
     const scheduleNextExercise = (room) => {
-      const next_minutes = _.random(mode_preset[mode].min, mode_preset[mode].max);
-      const next = moment().add( next_minutes, 'minutes' );
+      const minutes = _.random(mode_preset[mode].min, mode_preset[mode].max);
+      const next = moment().add( minutes, 'minutes' );
 
-      scheduler.scheduleJob( next.toDate(), () => {
+      const job = scheduler.scheduleJob( next.toDate(), () => {
         postExercise({
           room: room,
           next: true
         });
       });
 
-      return next_minutes;
+      return {
+        minutes,
+        job
+      };
     };
 
     const generateMessage = (user, exercise) => {
@@ -155,12 +158,14 @@ module.exports = robot => {
         time: moment().toISOString(),
         mode: mode,
         members: _.shuffle(possible_users),
-        exercises: _.shuffle(exercises.list)
+        exercises: _.shuffle(exercises.list),
+        job: null
       };
 
       // schedule the next one
-      const next_minutes = scheduleNextExercise(room);
-      messages.push(`Alright, it's on! Next exercise will commence in ${next_minutes} minutes :muscle:`);
+      const { minutes, job } = scheduleNextExercise(room);
+      exercise_start.job = job;
+      messages.push(`Alright, it's on! Next exercise will commence in ${minutes} minutes :muscle:`);
     } else if (config.next) {
       if (!exercise_start.exercises.length) {
         // refill
@@ -175,11 +180,13 @@ module.exports = robot => {
 
       if (!exercise_start.members.length) {
         messages.push(`Everyone in the channel has had their turn, so it's a wrap! See you on the next exercise ;)`);
+        exercise_start.job.cancel();
         exercise_start = null;
       } else {
         // schedule the next one
-        const next_minutes = scheduleNextExercise(room);
-        messages.push(`The next exercise will commence in ${next_minutes} minutes :muscle:`);
+        const { minutes, job } = scheduleNextExercise(room);
+        exercise.job = job;
+        messages.push(`The next exercise will commence in ${minutes} minutes :muscle:`);
       }
     }
 
@@ -228,6 +235,7 @@ module.exports = robot => {
       return false;
     }
 
+    exercise_start.job.cancel();
     exercise_start = null;
     res.reply('Exercise has been stopped! Thank you for doing the exercise :muscle:');
   });
