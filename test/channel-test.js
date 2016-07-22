@@ -24,6 +24,8 @@ describe("random exercise in channel", () => {
       });
     }
 
+    room.robot.brain.set('excluded_random_exercise', []);
+
     // mock @slack/node functions
     room.client = {
       getUserByID(user_id) {
@@ -45,6 +47,7 @@ describe("random exercise in channel", () => {
     clock.restore();
     now = null;
     room.client = null;
+    room.robot.brain.set('excluded_random_exercise', null);
   });
 
   context("default", () => {
@@ -121,6 +124,39 @@ describe("random exercise in channel", () => {
 
         // tick the clock until the end of the exercise
         clock.tick(diff_in_ms);
+      });
+    });
+
+    it("will not pick excluded user", () => {
+      return room.user.say("dummy1", "hubot: exclude me from random exercise").then(() => {
+        expect(room.messages[room.messages.length - 1][1]).to.include("You are now excluded");
+
+        expect(room.robot.brain.get("excluded_random_exercise")).to.eql(["dummy1"]);
+
+        return room.user.say("dummy1", "hubot: start exercise normal mode").then(() => {
+
+          now.add(1, "day");
+          const diff_in_ms = now.diff( moment.unix(0) + 60000 );
+
+          // go to the future
+          setTimeout(() => {
+            const stringified = JSON.stringify(room.messages);
+
+            // expect a congratulatory message when done
+            expect(stringified).to.not.include("today, @dummy1!");
+          }, diff_in_ms );
+
+          // tick the clock until the end of the exercise
+          clock.tick(diff_in_ms);
+        });
+      });
+    });
+
+    it("will include back excluded user", () => {
+      return room.user.say("dummy1", "hubot: include me in random exercise").then(() => {
+        expect(room.messages[room.messages.length - 1][1]).to.include("You are now included");
+
+        expect(room.robot.brain.get("excluded_random_exercise")).to.eql([]);
       });
     });
 

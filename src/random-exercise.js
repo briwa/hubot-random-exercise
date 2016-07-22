@@ -143,10 +143,11 @@ module.exports = (robot) => {
 
       messages.push(generateMessage(user, exercise));
     } else if (config.first) {
+      const excluded_users = robot.brain.get('excluded_random_exercise') || [];
       const channel_users = robot.adapter.client.getChannelByName(room).members;
       const possible_users = channel_users.filter((user) => {
         const slack_user = robot.adapter.client.getUserByID(user);
-        return !slack_user.is_bot;
+        return !slack_user.is_bot && excluded_users.indexOf(user) < 0;
       });
 
       // set the initiator locally
@@ -258,7 +259,7 @@ module.exports = (robot) => {
     excluded = _.uniq(excluded.concat([res.message.user.id]));
     robot.brain.set('excluded_random_exercise', excluded);
 
-    res.reply('ok! You are now excluded from random exercises');
+    res.reply('ok! You are now excluded from the next random exercises');
 
   });
 
@@ -268,7 +269,7 @@ module.exports = (robot) => {
     excluded = _.pull(excluded, res.message.user.id);
     robot.brain.set('excluded_random_exercise', excluded);
 
-    res.reply('ok! You are now included in random exercises');
+    res.reply('ok! You are now included in the next random exercises');
 
   });
 
@@ -304,12 +305,11 @@ module.exports = (robot) => {
     const rule = {hour: 9, minute: 0, second: 1, dayOfWeek: new scheduler.Range(1, 5)};
     // const rule = {second: new scheduler.Range(0,60)}; // for testing purpose
     scheduler.scheduleJob(rule, function() {
-
       const holidays = robot.brain.get('holidays') || [];
       const today = moment().format('YYYY-MM-DD');
       const holiday = _.find(holidays, {date: today});
       if (holiday) {
-        robot.messageRoom(`#${exercises.daily}`, `No random exercises today because we're celebrating ${holiday.summary} :muscle:`);
+        robot.send({room: `#${exercises.daily}`}, `No random exercises today because we're celebrating ${holiday.summary} :muscle:`);
       } else {
         postExercise({
           room: exercises.daily,
