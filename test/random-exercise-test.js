@@ -10,10 +10,22 @@ describe("random exercise", () => {
   let room;
 
   beforeEach(() => {
-    room = helper.createRoom();
-    room.robot.brain.userForId("briwa", {name: "briwa"});
-    room.robot.brain.userForId("colin", {name: "colin"});
-    room.robot.brain.userForId("jun", {name: "jun"});
+    room = helper.createRoom({room: "dailychannel"});
+    room.robot.brain.userForId("briwa", {name: "briwa", "id": "briwa"});
+    room.robot.brain.userForId("colin", {name: "colin", "id": "colin"});
+    room.robot.brain.userForId("jun", {name: "jun", "id": "jun"});
+
+    // mock @slack/node functions
+    room.client = {
+      getUserByID(user_id) {
+        return room.robot.brain.users()[user_id];
+      },
+      getChannelByName(channel_name) {
+        return {
+          members: Object.keys(room.robot.brain.users())
+        };
+      }
+    };
   });
 
   afterEach(() => {
