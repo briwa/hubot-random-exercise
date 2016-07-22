@@ -163,9 +163,9 @@ module.exports = robot => {
       };
 
       // schedule the next one
-      const { minutes, job } = scheduleNextExercise(room);
-      exercise_start.job = job;
-      messages.push(`Alright, it's on! Next exercise will commence in ${minutes} minutes :muscle:`);
+      const config = scheduleNextExercise(room);
+      exercise_start.job = config.job;
+      messages.push(`Alright, it's on! Next exercise will commence in ${config.minutes} minutes :muscle:`);
     } else if (config.next) {
       if (!exercise_start.exercises.length) {
         // refill
@@ -184,9 +184,9 @@ module.exports = robot => {
         exercise_start = null;
       } else {
         // schedule the next one
-        const { minutes, job } = scheduleNextExercise(room);
-        exercise.job = job;
-        messages.push(`The next exercise will commence in ${minutes} minutes :muscle:`);
+        const config = scheduleNextExercise(room);
+        exercise_start.job = config.job;
+        messages.push(`The next exercise will commence in ${config.minutes} minutes :muscle:`);
       }
     }
 
