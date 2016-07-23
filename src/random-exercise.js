@@ -1,10 +1,10 @@
 // Description:
-//   Random exercises throughout the day. Only picks up active users from channel members
+//   Random exercises throughout the day. Picks up all users from channel members
 //
 
 'use strict';
 
-module.exports = robot => {
+module.exports = (robot) => {
 
   const moment = require('moment');
   const scheduler = require('node-schedule');
@@ -94,12 +94,6 @@ module.exports = robot => {
   let mode = 'normal';
 
   const postExercise = (config) => {
-    // do not proceed if there's no exercise initiated
-    if (!config.first && !config.single && !exercise_start) {
-      console.log('No exercise is initiated, aborting...');
-      return false;
-    }
-
     const messages = [];
     const respond = config.respond;
     const room = config.room || respond.message.room;
@@ -166,7 +160,7 @@ module.exports = robot => {
       const config = scheduleNextExercise(room);
       exercise_start.job = config.job;
       messages.push(`Alright, it's on! Next exercise will commence in ${config.minutes} minutes :muscle:`);
-    } else if (config.next) {
+    } else {
       if (!exercise_start.exercises.length) {
         // refill
         exercise_start.exercises = _.shuffle(exercises.list);
@@ -215,6 +209,8 @@ module.exports = robot => {
 
     if (exercise_start) {
       res.reply(`Okay, resetting the current exercise...`);
+      exercise_start.job.cancel();
+      exercise_start = null;
     }
 
     postExercise({

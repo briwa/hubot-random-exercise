@@ -16,7 +16,7 @@ describe("random exercise", () => {
     room = helper.createRoom({name: "dailychallenge"});
 
     let dummy_user = "dummy";
-    let max_dummy = 10;
+    let max_dummy = 20;
     for (let i = max_dummy; i--;) {
       room.robot.brain.userForId(`dummy${i}`, {
         name: `dummy${i}`,
@@ -62,6 +62,20 @@ describe("random exercise", () => {
           // the last message
           const last_message = room.messages[room.messages.length - 1];
           expect(last_message).to.eql(["hubot", "@dummy1 Exercise has been stopped! Thank you for doing the exercise :muscle:"]);
+        });
+      });
+    });
+
+    it("will let user know when they're overriding exercises session", () => {
+      return room.user.say("dummy1", "hubot: start exercise normal mode").then(() => {
+        return room.user.say("dummy1", "hubot: start exercise normal mode").then(() => {
+          expect(room.messages[room.messages.length - 1][1]).to.include("resetting the current exercise");
+
+          return room.user.say("dummy1", "hubot: stop exercise").then(() => {
+            // the last message
+            const last_message = room.messages[room.messages.length - 1];
+            expect(last_message).to.eql(["hubot", "@dummy1 Exercise has been stopped! Thank you for doing the exercise :muscle:"]);
+          });
         });
       });
     });
