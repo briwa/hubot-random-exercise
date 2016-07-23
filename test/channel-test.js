@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const Helper = require("hubot-test-helper");
 const helper = new Helper("../src");
@@ -8,7 +8,7 @@ const expect = require("chai").expect;
 const sinon = require("sinon");
 const moment = require("moment");
 
-describe("random exercise", () => {
+describe("random exercise in channel", () => {
 
   let room, clock, now;
 
@@ -47,15 +47,16 @@ describe("random exercise", () => {
     room.client = null;
   });
 
-  context("default random exercise", () => {
+  context("default", () => {
 
     it("will start and stop exercise normally", () => {
       return room.user.say("dummy1", "hubot: start exercise normal mode").then(() => {
-        const confirmed_message = room.messages[1][1];
+        // take the last message in the room
+        const confirmed_message = room.messages[room.messages.length - 1][1];
         expect(confirmed_message).to.include("Next exercise will commence in");
 
         // the randomized minute reply
-        const random_number = parseInt(confirmed_message.replace(/\D/g,''));
+        const random_number = parseInt(confirmed_message.replace(/\D/g,""));
         expect(random_number).to.be.within(20, 30);
 
         return room.user.say("dummy1", "hubot: stop exercise").then(() => {
@@ -106,7 +107,7 @@ describe("random exercise", () => {
         const total_time_spent = total_members * 30; // in minutes
 
         // modify the time reference to the end of the exercise
-        now.add(total_time_spent, 'minutes');
+        now.add(total_time_spent, "minutes");
         const diff_in_ms = now.diff( moment.unix(0) + 60000 );
 
         // go to the future
@@ -127,12 +128,12 @@ describe("random exercise", () => {
 
   context("single exercise", () => {
 
-    it("will start single exercise", () => {
+    it("will generate single exercise", () => {
       return room.user.say("dummy1", "hubot: single exercise").then(() => {
 
         // the randomized exercise reply
-        const randomized = room.messages[1][1];
-        expect(randomized).to.include('Your turn to');
+        const exercise_message = room.messages[room.messages.length - 1][1];
+        expect(exercise_message).to.include("Your turn to");
       });
     });
 

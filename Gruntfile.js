@@ -2,23 +2,14 @@
 
 module.exports = function(grunt) {
 
-  grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-release');
-  grunt.loadNpmTasks('grunt-mocha-istanbul')
+  grunt.loadNpmTasks('grunt-mocha-istanbul');
 
   grunt.initConfig({
-    mochaTest: {
-      test: {
-        options: {
-          reporter: 'spec',
-        },
-        src: ['test/**/*']
-      }
-    },
     release: {
       options: {
         tagName: 'v<%= version %>',
-        commitMessage: 'Prepared to release <%= version %>.'
+        commitMessage: 'Bump version to <%= version %>'
       }
     },
     watch: {
@@ -30,7 +21,7 @@ module.exports = function(grunt) {
           src: ['test/**/*'],
           options: {
               reporter: 'spec',
-              require: ['coffee-script/register'],
+              require: ['coffee-script/register'], // needed because hubot (required for test) is written in coffeescript
               compilers: ['coffee:coffee-script']
           }
       },
@@ -44,7 +35,7 @@ module.exports = function(grunt) {
   // load all grunt tasks
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
-  grunt.registerTask('test', ['mochaTest', 'mocha_istanbul:coverage']);
+  grunt.registerTask('test', ['mocha_istanbul:coverage']);
   grunt.registerTask('test:watch', ['watch']);
   grunt.registerTask('default', ['test']);
 };
