@@ -21,8 +21,7 @@
   "dependencies": {
     "lodash": "3.9.3",
     "moment": "^2.10.6",
-    "node-schedule": "^0.5.1",
-    "hubot": "^2.18.0"
+    "node-schedule": "^0.5.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -36,7 +35,9 @@
     "istanbul": "^0.4.4",
     "matchdep": "^1.0.1",
     "mocha": "^2.5.3",
-    "sinon": "^1.17.4"
+    "sinon": "^1.17.4",
+    "hubot": "^2.18.0",
+    "coffee-script": "^1.10.0"
   },
   "main": "index.js",
   "scripts": {
